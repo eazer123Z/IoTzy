@@ -1,0 +1,29 @@
+# Block direct access to sensitive files
+<FilesMatch "^(config\.php|database\.sql|README\.md|test_curl\.php)$">
+    Require all denied
+</FilesMatch>
+
+# Block access to includes directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block includes/
+    RewriteRule ^includes/ - [F,L]
+
+    # Block views/ (only accessible via PHP include)
+    RewriteRule ^views/ - [F,L]
+</IfModule>
+
+# 404 Error Page
+ErrorDocument 404 /index.php?route=404
+
+# Prevent directory listing
+Options -Indexes
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; img-src 'self' https: data: blob:; media-src 'self' blob:; connect-src 'self' https: ws: wss:;"
+</IfModule>
